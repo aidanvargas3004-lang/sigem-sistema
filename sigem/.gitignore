@@ -34,4 +34,15 @@ build/
 
 ### Logs ###
 logs/
+
+# Local secrets and IDE/user-specific files
+.env
+.env.*.local
+!.env.example
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Respaldos locales de la base de datos
 backups/
