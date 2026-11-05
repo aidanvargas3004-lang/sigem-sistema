@@ -1,5 +1,13 @@
 # Historial de versiones
 
+## [v4.0] - 2026-11-05
+
+- Plan de pruebas de software: 75 pruebas automatizadas Java (57 unitarias y 18 de integración con PostgreSQL), prueba de sistema con Playwright (70 páginas de los 8 roles) y 7 casos de aceptación del flujo comercial (`pruebas/`).
+- 12 pruebas unitarias nuevas para cotizaciones y contratos.
+- Cobertura de pruebas con JaCoCo (`mvn verify` genera `target/site/jacoco/index.html`).
+- Corrección: `mvnw` no tenía permiso de ejecución en Linux y macOS.
+- Informe de avance v4.0: modelo y denominación de reportes, importación y exportación de ficheros, control de versiones (ramas, commits, fusión y rollback), plan de pruebas e inventario de documentación.
+
 ## [v3.0] - 2026-10-26
 
 - Módulo de pagos y cobranzas: Ventas registra pagos en efectivo, transferencia, depósito, Yape, Plin o tarjeta (POS) con su número de operación y emite recibos en PDF; el cliente ve el saldo de sus contratos y reporta sus pagos desde *Mis pagos*; Ventas los confirma o rechaza y solo ADMIN anula recibos.
