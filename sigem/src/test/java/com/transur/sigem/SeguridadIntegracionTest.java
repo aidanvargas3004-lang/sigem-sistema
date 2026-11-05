@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Pruebas de integración de seguridad (MVC + Spring Security + PostgreSQL).
- * Requieren la base de datos: DB_URL=jdbc:postgresql://localhost:5432/sigem_db DB_PASSWORD=... mvn test
+ * Requieren la base de datos: DB_URL=jdbc:postgresql://localhost:5432/getion_sigem DB_PASSWORD=... mvn test
  */
 @SpringBootTest
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)

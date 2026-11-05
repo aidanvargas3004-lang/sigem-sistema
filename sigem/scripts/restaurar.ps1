@@ -1,9 +1,9 @@
 # Restaura un respaldo de SIGEM en una base nueva o vacía (Windows / PowerShell)
 # Detenga la aplicación antes de restaurar.
-# Uso:  .\scripts\restaurar.ps1 -Archivo backups\sigem_db_20261012_020000.sql [-Base sigem_db]
+# Uso:  .\scripts\restaurar.ps1 -Archivo backups\sigem_db_20261012_020000.sql [-Base getion_sigem]
 param(
     [Parameter(Mandatory = $true)][string]$Archivo,
-    [string]$Base = "sigem_db",
+    [string]$Base = "getion_sigem",
     [string]$Usuario = "postgres",
     [string]$Servidor = "localhost",
     [int]$Puerto = 5432

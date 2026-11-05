@@ -63,6 +63,6 @@ La aplicación incluye una portada pública en `/` con catálogo de maquinaria y
 
 ## Escenario demo reproducible
 
-Al levantar una base `sigem_db` nueva, SIGEM crea primero roles/cuentas base y luego ejecuta `DemoDataSeeder` para poblar un escenario de demostración relacionado. Incluye múltiples clientes con acceso al portal, maquinaria con imágenes externas, solicitudes, cotizaciones, contratos, servicios/asignaciones, empleados, proveedores, repuestos, almacenes, movimientos, inventario, mantenimientos y marketing.
+Al levantar una base `getion_sigem` nueva, SIGEM crea primero roles/cuentas base y luego ejecuta `DemoDataSeeder` para poblar un escenario de demostración relacionado. Incluye múltiples clientes con acceso al portal, maquinaria con imágenes externas, solicitudes, cotizaciones, contratos, servicios/asignaciones, empleados, proveedores, repuestos, almacenes, movimientos, inventario, mantenimientos y marketing.
 
 Las cuentas adicionales de clientes se documentan en `docs/ACCESOS_DEMO.md`. El seeder es idempotente y no duplica el escenario cuando ya se encuentran los volúmenes mínimos cargados.
