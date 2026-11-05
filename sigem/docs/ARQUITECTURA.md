@@ -18,7 +18,7 @@ Navegador (Thymeleaf)          App / dispositivo GPS (JSON + JWT)
 │  DAO: Repository JPA (CRUD, consultas derivadas)   DAO JDBC (reportes, bitácora de auditoría)     │
 └────────┼───────────────────────────────────────────────────┼──────────────────────────────────────┘
          ▼                                                   ▼
-                         PostgreSQL 16 (sigem_db)
+                         PostgreSQL 16 (getion_sigem)
 ```
 
 Transversales: `NotificacionesInterceptor` (contador de alertas en cada vista), `AuditoriaEntidadesListener` (eventos de Hibernate → bitácora), `ApiExceptionHandler` (errores JSON uniformes), tareas programadas (`@Scheduled`).

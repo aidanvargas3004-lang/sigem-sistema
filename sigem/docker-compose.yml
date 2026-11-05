@@ -4,7 +4,7 @@ services:
     container_name: sigem-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: sigem_db
+      POSTGRES_DB: getion_sigem
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:

@@ -1,8 +1,8 @@
 # Respaldo manual de la base de datos SIGEM con pg_dump (Windows / PowerShell)
 # Uso:  .\scripts\respaldar.ps1                       (pide la contraseña)
-#       .\scripts\respaldar.ps1 -Base sigem_db -Usuario postgres
+#       .\scripts\respaldar.ps1 -Base getion_sigem -Usuario postgres
 param(
-    [string]$Base = "sigem_db",
+    [string]$Base = "getion_sigem",
     [string]$Usuario = "postgres",
     [string]$Servidor = "localhost",
     [int]$Puerto = 5432,

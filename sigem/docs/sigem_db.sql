@@ -4,7 +4,7 @@
 --
 --  PASO 1: conéctese a la base "postgres" en pgAdmin 4 (Query Tool) y
 --          ejecute SOLO el bloque "PASO 1".
---  PASO 2: seleccione la base "sigem_db" (clic sobre ella), abra un
+--  PASO 2: seleccione la base "getion_sigem" (clic sobre ella), abra un
 --          Query Tool nuevo y ejecute desde "PASO 2" hasta el final.
 --
 --  Nota: este paso 2 es opcional. Si lo omite, la aplicación crea todas
@@ -13,18 +13,18 @@
 -- =====================================================================
 
 -- ============================ PASO 1 =================================
-CREATE DATABASE sigem_db
+CREATE DATABASE getion_sigem
     WITH
     OWNER = postgres
     ENCODING = 'UTF8'
     TEMPLATE = template0
     CONNECTION LIMIT = -1;
 
-COMMENT ON DATABASE sigem_db
+COMMENT ON DATABASE getion_sigem
     IS 'Sistema Integral de Gestión de Flotas y Maquinaria - TRANSUR';
 
 -- ============================ PASO 2 =================================
--- (Ejecutar conectado a sigem_db)
+-- (Ejecutar conectado a getion_sigem)
 
 --
 --

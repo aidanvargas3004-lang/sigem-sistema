@@ -17,7 +17,7 @@ Aplicación web de **TRANSUR S.A.C.** para gestionar de punta a punta el negocio
 
 ### 1.1 Base de datos (pgAdmin 4)
 
-1. En pgAdmin 4: *Servers → PostgreSQL → Databases → Create → Database…* con nombre `sigem_db`.
+1. En pgAdmin 4: *Servers → PostgreSQL → Databases → Create → Database…* con nombre `getion_sigem`.
 2. No hace falta ejecutar scripts: al arrancar, Hibernate crea/actualiza las tablas (`ddl-auto=update`), `RoleBootstrap` crea roles y cuentas y `DemoDataSeeder` / `DemoOperacionesSeeder` cargan un escenario demo completo.
 
 Alternativa con Docker: `docker compose up -d postgres` (usuario y clave `postgres`).
@@ -28,7 +28,7 @@ Ver `.env.example`. Las principales:
 
 | Variable | Valor por defecto | Uso |
 |---|---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/sigem_db` | Conexión JDBC |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/getion_sigem` | Conexión JDBC |
 | `DB_USERNAME` / `DB_PASSWORD` | `postgres` / `root112233` | Credenciales de PostgreSQL (cámbielas por las de su pgAdmin) |
 | `JWT_SECRET` | clave de desarrollo | **Obligatorio cambiarla en producción** (32+ caracteres). La app avisa en el log si es débil |
 | `CLOUDINARY_*` | vacío | Opcional, para subir imágenes |
@@ -64,7 +64,7 @@ Más cuentas de clientes en `docs/ACCESOS_DEMO.md`.
 
 ```bash
 ./mvnw test                                   # 45 pruebas unitarias (no necesitan BD)
-DB_URL=jdbc:postgresql://localhost:5432/sigem_db DB_PASSWORD=su_clave ./mvnw test   # + 18 de integración (MockMvc + PostgreSQL)
+DB_URL=jdbc:postgresql://localhost:5432/getion_sigem DB_PASSWORD=su_clave ./mvnw test   # + 18 de integración (MockMvc + PostgreSQL)
 ```
 
 ## 2. Módulos y requerimientos
