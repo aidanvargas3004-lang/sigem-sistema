@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registrar pago - SIGEM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body{background:#f8fafc;font-family:'Segoe UI',system-ui,sans-serif}.sidebar{min-height:100vh;background:#1e293b;color:#fff;width:260px;position:fixed;left:0;top:0;z-index:1000}.sidebar .nav-link{color:#94a3b8;padding:11px 18px;border-left:3px solid transparent}.sidebar .nav-link:hover,.sidebar .nav-link.active{color:#fff;background:#334155;border-left-color:#3b82f6}.sidebar .nav-link i{width:24px}.main{margin-left:260px;padding:30px}.card{border:0;border-radius:14px;box-shadow:0 3px 12px rgba(15,23,42,.05)}.label{font-size:.75rem;color:#64748b;text-transform:uppercase;font-weight:700}
+    </style>
+</head>
+<body><th:block th:replace="~{fragments/campana :: campana}"></th:block>
+<div th:replace="~{ventas/_nav :: sidebar('pagos')}"></div>
+<main class="main">
+    <a th:href="@{/ventas/pagos}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Pagos</a>
+    <h2 class="fw-bold mt-2 mb-1">Registrar pago</h2>
+    <p class="text-muted">Use este formulario cuando el pago ya fue recibido o verificado por Ventas; queda confirmado y se emite el recibo.</p>
+
+    <div th:if="${error}" class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span></div>
+    <div th:if="${#lists.isEmpty(contratos)}" class="alert alert-info">No hay contratos con saldo pendiente.</div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <form class="card p-4" method="post" th:action="@{/ventas/pagos}" th:object="${pago}">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Contrato</label>
+                        <select th:field="*{contratoId}" class="form-select" id="contrato" required th:classappend="${#fields.hasErrors('contratoId')} ? ' is-invalid'">
+                            <option value="">Seleccione…</option>
+                            <option th:each="c : ${contratos}" th:value="${c.id}" th:attr="data-saldo=${resumenes[c.id].saldo},data-total=${c.montoTotal},data-pagado=${resumenes[c.id].pagado},data-validar=${resumenes[c.id].porValidar}"
+                                    th:text="${c.numero + ' · ' + c.cliente.razonSocial + ' · saldo S/ ' + #numbers.formatDecimal(resumenes[c.id].saldo,1,'COMMA',2,'POINT')}">CTR</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{contratoId}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Fecha del pago</label>
+                        <input type="date" th:field="*{fechaPago}" class="form-control" required th:attr="max=${#temporals.format(#temporals.createToday(),'yyyy-MM-dd')}" th:classappend="${#fields.hasErrors('fechaPago')} ? ' is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{fechaPago}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Monto (S/)</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" th:field="*{monto}" id="monto" class="form-control" required th:classappend="${#fields.hasErrors('monto')} ? ' is-invalid'">
+                            <button type="button" class="btn btn-outline-secondary" id="pagarSaldo" title="Pagar el saldo completo">Saldo</button>
+                            <div class="invalid-feedback" th:errors="*{monto}"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Medio de pago</label>
+                        <select th:field="*{metodo}" id="metodo" class="form-select" required th:classappend="${#fields.hasErrors('metodo')} ? ' is-invalid'">
+                            <option value="">Seleccione…</option>
+                            <option th:each="m : ${metodos}" th:value="${m}" th:text="${m.etiqueta}" th:attr="data-op=${m.requiereOperacion}">Yape</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{metodo}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">N° de operación / voucher <span class="text-muted fw-normal" id="opAyuda">(no aplica para efectivo)</span></label>
+                        <input th:field="*{numeroOperacion}" id="operacion" class="form-control" maxlength="40" placeholder="Ej. 00123456" th:classappend="${#fields.hasErrors('numeroOperacion')} ? ' is-invalid'">
+                        <div class="invalid-feedback" th:errors="*{numeroOperacion}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Observación</label>
+                        <input th:field="*{observacion}" class="form-control" maxlength="255" placeholder="Opcional">
+                    </div>
+                </div>
+                <div class="mt-4 d-flex gap-2">
+                    <button class="btn btn-primary" th:disabled="${#lists.isEmpty(contratos)}"><i class="bi bi-save me-1"></i>Registrar pago</button>
+                    <a class="btn btn-outline-secondary" th:href="@{/ventas/pagos}">Cancelar</a>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4">
+            <div class="card p-4">
+                <h6 class="fw-bold mb-3">Situación del contrato</h6>
+                <div class="label">Monto del contrato</div><div class="fw-semibold mb-2" id="rTotal">-</div>
+                <div class="label">Pagado (confirmado)</div><div class="fw-semibold mb-2 text-success" id="rPagado">-</div>
+                <div class="label">Reportado por validar</div><div class="fw-semibold mb-2 text-warning-emphasis" id="rValidar">-</div>
+                <div class="label">Saldo pendiente</div><div class="fs-5 fw-bold text-danger" id="rSaldo">-</div>
+                <hr>
+                <small class="text-muted">El monto no puede superar el saldo. Los pagos que el cliente reporta desde su portal aparecen en <b>Pagos → Por validar</b>.</small>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+(function () {
+    const contrato = document.getElementById('contrato'), monto = document.getElementById('monto'),
+          metodo = document.getElementById('metodo'), operacion = document.getElementById('operacion'),
+          ayuda = document.getElementById('opAyuda');
+    const soles = v => 'S/ ' + Number(v || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    function resumen() {
+        const o = contrato.selectedOptions[0];
+        const d = o && o.value ? o.dataset : {};
+        document.getElementById('rTotal').textContent = d.total ? soles(d.total) : '-';
+        document.getElementById('rPagado').textContent = d.total ? soles(d.pagado) : '-';
+        document.getElementById('rValidar').textContent = d.total ? soles(d.validar) : '-';
+        document.getElementById('rSaldo').textContent = d.total ? soles(d.saldo) : '-';
+        if (d.saldo) monto.max = d.saldo;
+    }
+    function medio() {
+        const o = metodo.selectedOptions[0];
+        const requiere = o && o.dataset.op === 'true';
+        operacion.required = requiere;
+        ayuda.textContent = requiere ? '(obligatorio)' : '(no aplica para efectivo)';
+    }
+    document.getElementById('pagarSaldo').addEventListener('click', () => {
+        const o = contrato.selectedOptions[0];
+        if (o && o.dataset.saldo) monto.value = Number(o.dataset.saldo).toFixed(2);
+    });
+    contrato.addEventListener('change', resumen);
+    metodo.addEventListener('change', medio);
+    resumen(); medio();
+})();
+</script>
+</body></html>

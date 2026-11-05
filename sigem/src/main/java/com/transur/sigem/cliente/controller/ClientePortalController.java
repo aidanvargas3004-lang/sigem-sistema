@@ -1,7 +1,7 @@
 package com.transur.sigem.cliente.controller;
 
 import com.transur.sigem.cliente.entity.Cliente;
-import com.transur.sigem.cliente.repository.ClienteRepository;
+import com.transur.sigem.cliente.service.ClienteSesionService;
 import com.transur.sigem.comercial.dto.SolicitudRequest;
 import com.transur.sigem.comercial.entity.Cotizacion;
 import com.transur.sigem.comercial.entity.Solicitud;
@@ -11,8 +11,7 @@ import com.transur.sigem.comercial.repository.CotizacionRepository;
 import com.transur.sigem.comercial.repository.SolicitudRepository;
 import com.transur.sigem.comercial.service.SolicitudService;
 import com.transur.sigem.operaciones.repository.ServicioRepository;
-import com.transur.sigem.security.entity.Usuario;
-import com.transur.sigem.security.repository.UsuarioRepository;
+import com.transur.sigem.pagos.service.PagoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -27,14 +26,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClientePortalController {
 
-    private final UsuarioRepository usuarioRepository;
-    private final ClienteRepository clienteRepository;
     private final SolicitudRepository solicitudRepository;
     private final CotizacionRepository cotizacionRepository;
     private final ContratoRepository contratoRepository;
     private final ServicioRepository servicioRepository;
     private final AlquilerRepository alquilerRepository;
     private final SolicitudService solicitudService;
+    private final ClienteSesionService clienteSesionService;
+    private final PagoService pagoService;
 
     @GetMapping({"", "/", "/dashboard"})
     public String dashboard(Authentication authentication, Model model) {
@@ -143,7 +142,9 @@ public class ClientePortalController {
     public String contratos(Authentication authentication, Model model) {
         Cliente cliente = clienteActual(authentication);
         model.addAttribute("cliente", cliente);
-        model.addAttribute("contratos", contratoRepository.findByClienteIdOrderByFechaInicioDesc(cliente.getId()));
+        var contratos = contratoRepository.findByClienteIdOrderByFechaInicioDesc(cliente.getId());
+        model.addAttribute("contratos", contratos);
+        model.addAttribute("resumenes", pagoService.resumenes(contratos));
         return "cliente/contratos";
     }
 
@@ -163,11 +164,6 @@ public class ClientePortalController {
     }
 
     private Cliente clienteActual(Authentication authentication) {
-        Usuario usuario = usuarioRepository.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalStateException("Usuario autenticado no encontrado"));
-        Cliente cliente = clienteRepository.findByUsuarioId(usuario.getId()).orElse(null);
-        if (cliente == null && usuario.getCliente() != null) cliente = usuario.getCliente();
-        if (cliente == null) throw new IllegalStateException("La cuenta no tiene un cliente asociado. Contacte a Administración.");
-        return cliente;
+        return clienteSesionService.clienteActual(authentication);
     }
 }

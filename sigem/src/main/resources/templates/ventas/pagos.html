@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pagos y cobranzas - SIGEM</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body{background:#f8fafc;font-family:'Segoe UI',system-ui,sans-serif}.sidebar{min-height:100vh;background:#1e293b;color:#fff;width:260px;position:fixed;left:0;top:0;z-index:1000}.sidebar .nav-link{color:#94a3b8;padding:11px 18px;border-left:3px solid transparent}.sidebar .nav-link:hover,.sidebar .nav-link.active{color:#fff;background:#334155;border-left-color:#3b82f6}.sidebar .nav-link i{width:24px}.main{margin-left:260px;padding:30px}.card{border:0;border-radius:14px;box-shadow:0 3px 12px rgba(15,23,42,.05)}.kpi{min-height:112px}.kpi .icon{width:45px;height:45px;border-radius:11px;display:flex;align-items:center;justify-content:center}.table thead th{font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;color:#64748b;background:#f8fafc;white-space:nowrap}.table td{vertical-align:middle}.badge-status{border:1px solid}.btn-action{width:34px;height:34px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+    </style>
+</head>
+<body><th:block th:replace="~{fragments/campana :: campana}"></th:block>
+<div th:replace="~{ventas/_nav :: sidebar('pagos')}"></div>
+<main class="main">
+    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-2"></i><span th:text="${mensaje}"></span><button class="btn-close" data-bs-dismiss="alert"></button></div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show"><i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span><button class="btn-close" data-bs-dismiss="alert"></button></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div><h2 class="fw-bold mb-1">Pagos y cobranzas</h2><div class="text-muted">Pagos de contratos en efectivo, transferencia, depósito, Yape, Plin o tarjeta (POS).</div></div>
+        <a class="btn btn-primary" th:href="@{/ventas/pagos/nuevo}"><i class="bi bi-plus-lg me-1"></i>Registrar pago</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="card kpi p-3"><div class="d-flex justify-content-between"><div><small class="text-muted text-uppercase fw-semibold">Cobrado este mes</small><div class="fs-4 fw-bold">S/ <span th:text="${#numbers.formatDecimal(cobradoMes,1,'COMMA',2,'POINT')}">0.00</span></div></div><div class="icon bg-success-subtle text-success"><i class="bi bi-cash-coin fs-4"></i></div></div></div></div>
+        <div class="col-md-3"><a class="text-decoration-none text-reset" th:href="@{/ventas/pagos(estado='POR_VALIDAR')}"><div class="card kpi p-3"><div class="d-flex justify-content-between"><div><small class="text-muted text-uppercase fw-semibold">Por validar</small><div class="fs-4 fw-bold" th:text="${porValidar}">0</div><small class="text-muted">reportados por clientes</small></div><div class="icon bg-warning-subtle text-warning"><i class="bi bi-hourglass-split fs-4"></i></div></div></div></a></div>
+        <div class="col-md-3"><div class="card kpi p-3"><div class="d-flex justify-content-between"><div><small class="text-muted text-uppercase fw-semibold">Saldo por cobrar</small><div class="fs-4 fw-bold">S/ <span th:text="${#numbers.formatDecimal(saldoPendiente,1,'COMMA',2,'POINT')}">0.00</span></div></div><div class="icon bg-danger-subtle text-danger"><i class="bi bi-wallet2 fs-4"></i></div></div></div></div>
+        <div class="col-md-3"><div class="card kpi p-3"><div class="d-flex justify-content-between"><div><small class="text-muted text-uppercase fw-semibold">Contratos pagados</small><div class="fs-4 fw-bold" th:text="${contratosPagados + ' / ' + totalContratos}">0 / 0</div></div><div class="icon bg-primary-subtle text-primary"><i class="bi bi-patch-check fs-4"></i></div></div></div></div>
+    </div>
+
+    <form class="card p-3 mb-3" method="get" th:action="@{/ventas/pagos}">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-2"><label class="form-label small fw-semibold">Estado</label><select name="estado" class="form-select"><option value="">Todos</option><option th:each="e : ${estados}" th:value="${e}" th:text="${e.etiqueta}" th:selected="${filtro.estado == e}"></option></select></div>
+            <div class="col-md-2"><label class="form-label small fw-semibold">Medio</label><select name="metodo" class="form-select"><option value="">Todos</option><option th:each="m : ${metodos}" th:value="${m}" th:text="${m.etiqueta}" th:selected="${filtro.metodo == m}"></option></select></div>
+            <div class="col-md-2"><label class="form-label small fw-semibold">Desde</label><input type="date" name="desde" class="form-control" th:value="${filtro.desde}"></div>
+            <div class="col-md-2"><label class="form-label small fw-semibold">Hasta</label><input type="date" name="hasta" class="form-control" th:value="${filtro.hasta}"></div>
+            <div class="col-md-4 d-flex gap-2">
+                <button class="btn btn-dark"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                <a class="btn btn-outline-secondary" th:href="@{/ventas/pagos}">Limpiar</a>
+                <a class="btn btn-outline-success" th:href="@{/ventas/pagos/exportar/excel(estado=${filtro.estado},metodo=${filtro.metodo},desde=${filtro.desde},hasta=${filtro.hasta})}"><i class="bi bi-file-earmark-excel"></i></a>
+                <a class="btn btn-outline-danger" th:href="@{/ventas/pagos/exportar/pdf(estado=${filtro.estado},metodo=${filtro.metodo},desde=${filtro.desde},hasta=${filtro.hasta})}"><i class="bi bi-file-earmark-pdf"></i></a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card overflow-hidden">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center"><h5 class="mb-0 fw-bold">Pagos registrados</h5><span class="text-muted small"><span th:text="${pagos.size() + ' registros'}">0 registros</span> · confirmado S/ <span th:text="${#numbers.formatDecimal(totalListado,1,'COMMA',2,'POINT')}">0.00</span></span></div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead><tr><th class="ps-4">Recibo</th><th>Fecha</th><th>Contrato / cliente</th><th>Medio</th><th class="text-end">Monto</th><th>Estado</th><th class="text-end pe-4">Acciones</th></tr></thead>
+                <tbody>
+                <tr th:each="p : ${pagos}">
+                    <td class="ps-4 text-nowrap"><span class="fw-semibold" th:text="${p.numeroRecibo ?: 'Sin recibo'}">REC-2026-00001</span><div class="small text-muted" th:text="${p.origen == 'CLIENTE' ? 'Reportado por el cliente' : 'Registrado por ' + p.registradoPor}">-</div></td>
+                    <td class="text-nowrap" th:text="${#temporals.format(p.fechaPago,'dd/MM/yyyy')}">01/10/2026</td>
+                    <td><a class="text-nowrap" th:href="@{/ventas/contratos/{id}(id=${p.contrato.id})}" th:text="${p.contrato.numero}">CTR-2026-001</a><div class="small text-muted" th:text="${p.contrato.cliente.razonSocial}">Cliente</div></td>
+                    <td><span class="badge text-bg-light border" th:text="${p.metodo.etiqueta}">Yape</span><div class="small text-muted" th:if="${p.numeroOperacion}" th:text="${'Op. ' + p.numeroOperacion}">Op.</div></td>
+                    <td class="text-end fw-semibold text-nowrap">S/ <span th:text="${#numbers.formatDecimal(p.monto,1,'COMMA',2,'POINT')}">0.00</span></td>
+                    <td><span class="badge badge-status" th:classappend="${p.estado.name() == 'CONFIRMADO' ? 'bg-success-subtle text-success border-success' : (p.estado.name() == 'POR_VALIDAR' ? 'bg-warning-subtle text-warning-emphasis border-warning' : 'bg-danger-subtle text-danger border-danger')}" th:text="${p.estado.etiqueta}">Confirmado</span>
+                        <div class="small text-muted" style="max-width:220px" th:if="${p.motivo}" th:text="${p.motivo}">motivo</div></td>
+                    <td class="text-end pe-4 text-nowrap">
+                        <form th:if="${p.estado.name() == 'POR_VALIDAR'}" class="d-inline" method="post" th:action="@{/ventas/pagos/{id}/confirmar(id=${p.id})}" onsubmit="return confirm('¿Confirmar este pago? Verifique antes el abono en el banco o la app.')"><button class="btn btn-sm btn-success"><i class="bi bi-check-lg me-1"></i>Confirmar</button></form>
+                        <form th:if="${p.estado.name() == 'POR_VALIDAR'}" class="d-inline con-motivo" method="post" th:action="@{/ventas/pagos/{id}/rechazar(id=${p.id})}" data-pregunta="Motivo del rechazo (el cliente lo verá):"><input type="hidden" name="motivo"><button class="btn btn-sm btn-outline-danger btn-action" title="Rechazar"><i class="bi bi-x-lg"></i></button></form>
+                        <a th:if="${p.numeroRecibo}" class="btn btn-sm btn-outline-primary btn-action" title="Recibo PDF" target="_blank" th:href="@{/ventas/pagos/{id}/recibo(id=${p.id})}"><i class="bi bi-receipt"></i></a>
+                        <form sec:authorize="hasRole('ADMIN')" th:if="${p.estado.name() == 'CONFIRMADO'}" class="d-inline con-motivo" method="post" th:action="@{/ventas/pagos/{id}/anular(id=${p.id})}" data-pregunta="Motivo de la anulación (el monto volverá al saldo del contrato):"><input type="hidden" name="motivo"><button class="btn btn-sm btn-outline-danger btn-action" title="Anular recibo"><i class="bi bi-slash-circle"></i></button></form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pagos)}"><td colspan="7" class="text-center py-5 text-muted"><i class="bi bi-cash-stack fs-1 d-block mb-2"></i>No hay pagos para los filtros seleccionados.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.querySelectorAll('form.con-motivo').forEach(f => f.addEventListener('submit', e => {
+    const motivo = prompt(f.dataset.pregunta);
+    if (!motivo || !motivo.trim()) { e.preventDefault(); return; }
+    f.querySelector('input[name=motivo]').value = motivo.trim();
+}));
+</script>
+</body></html>

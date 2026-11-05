@@ -25,6 +25,12 @@ Leyenda de soporte: **Pantalla** (registro en la aplicación), **Excel/PDF** (ar
 | Registro de alquiler | Salida | Pantalla | `/ventas/alquileres` | `alquileres`, `alquiler_detalles` |
 | Reporte de ventas | Salida | Pantalla, Excel, PDF | `/ventas/reportes` | consulta |
 | Aviso de contrato por vencer (15 días) | Salida | Alerta | `/notificaciones` | `notificaciones` |
+| Registro de pago (efectivo, transferencia, depósito, Yape, Plin, tarjeta POS) con N° de operación | Entrada | Pantalla | `/ventas/pagos/nuevo` | `pagos` |
+| Validación de pagos reportados por el cliente (confirmar / rechazar con motivo) | Entrada | Pantalla | `/ventas/pagos?estado=POR_VALIDAR` | `pagos` |
+| Recibo de pago (correlativo REC-AAAA-NNNNN) | Salida | PDF | `/ventas/pagos/{id}/recibo` | `pagos` |
+| Estado de pago por contrato (pendiente, parcial, pagado, saldo) | Salida | Pantalla | `/ventas/contratos`, `/ventas/contratos/{id}` | `pagos`, `contratos` |
+| Reporte de pagos y cobranzas | Salida | Pantalla, Excel, PDF | `/ventas/pagos`, `/ventas/pagos/exportar/{excel,pdf}` | consulta |
+| Aviso de pago por validar / pago confirmado o rechazado | Salida | Alerta | `/notificaciones` | `notificaciones` |
 
 ## 3. Producción / Operaciones
 
@@ -106,6 +112,9 @@ Leyenda de soporte: **Pantalla** (registro en la aplicación), **Excel/PDF** (ar
 | Cotizaciones recibidas | Salida | Pantalla | `/cliente/cotizaciones` |
 | Contratos | Salida | Pantalla | `/cliente/contratos` |
 | Seguimiento de servicios | Salida | Pantalla | `/cliente/servicios` |
+| Saldo de contratos y datos para pagar (cuenta, CCI, Yape, Plin) | Salida | Pantalla | `/cliente/pagos` |
+| Reporte de pago (transferencia, depósito, Yape o Plin con N° de operación) | Entrada | Pantalla | `/cliente/pagos` |
+| Recibos de pago | Salida | PDF | `/cliente/pagos/{id}/recibo` |
 
 ## 10. Documentación técnica del proyecto
 

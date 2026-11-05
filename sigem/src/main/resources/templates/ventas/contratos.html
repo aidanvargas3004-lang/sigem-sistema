@@ -31,7 +31,7 @@
         <div class="p-3 border-bottom d-flex justify-content-between align-items-center"><h5 class="mb-0 fw-bold">Contratos registrados</h5><span class="text-muted small" th:text="${contratos.size() + ' registros'}">0 registros</span></div>
         <div class="table-responsive">
             <table class="table table-hover mb-0">
-                <thead><tr><th class="ps-4">Nro contrato</th><th>Cotización</th><th>Cliente</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Monto</th><th>Estado</th><th class="text-end pe-4">Acciones</th></tr></thead>
+                <thead><tr><th class="ps-4">Nro contrato</th><th>Cotización</th><th>Cliente</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Monto</th><th>Pago</th><th>Estado</th><th class="text-end pe-4">Acciones</th></tr></thead>
                 <tbody>
                 <tr th:each="c : ${contratos}">
                     <td class="ps-4 fw-semibold" th:text="${c.numero}">CTR-2026-001</td>
@@ -41,10 +41,11 @@
                     <td th:text="${#temporals.format(c.fechaInicio,'dd/MM/yyyy')}">01/09/2026</td>
                     <td th:text="${c.fechaFin == null ? '-' : #temporals.format(c.fechaFin,'dd/MM/yyyy')}">31/10/2026</td>
                     <td class="fw-semibold">S/ <span th:text="${#numbers.formatDecimal(c.montoTotal,1,2)}">0.00</span></td>
+                    <td th:with="r=${resumenesPago[c.id]}"><span th:if="${r != null}" class="badge badge-status" th:classappend="${r.estado() == 'PAGADO' ? 'bg-success-subtle text-success border-success' : (r.estado() == 'PARCIAL' ? 'bg-warning-subtle text-warning-emphasis border-warning' : 'bg-secondary-subtle text-secondary border-secondary')}" th:text="${r.estado() + ' ' + r.porcentaje() + '%'}">PENDIENTE</span></td>
                     <td><span class="badge badge-status" th:classappend="${c.estado == 'VIGENTE' ? 'bg-success-subtle text-success border-success' : (c.estado == 'SUSPENDIDO' ? 'bg-warning-subtle text-warning border-warning' : (c.estado == 'FINALIZADO' ? 'bg-secondary-subtle text-secondary border-secondary' : 'bg-danger-subtle text-danger border-danger'))}" th:text="${c.estado}">VIGENTE</span></td>
                     <td class="text-end pe-4"><a class="btn btn-sm btn-outline-primary btn-action" title="Ver detalle" th:href="@{/ventas/contratos/{id}(id=${c.id})}"><i class="bi bi-eye"></i></a><a class="btn btn-sm btn-outline-secondary btn-action ms-1" title="Editar" th:href="@{/ventas/contratos/{id}/editar(id=${c.id})}"><i class="bi bi-pencil"></i></a></td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(contratos)}"><td colspan="9" class="text-center py-5 text-muted"><i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i>No hay contratos registrados.</td></tr>
+                <tr th:if="${#lists.isEmpty(contratos)}"><td colspan="10" class="text-center py-5 text-muted"><i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i>No hay contratos registrados.</td></tr>
                 </tbody>
             </table>
         </div>

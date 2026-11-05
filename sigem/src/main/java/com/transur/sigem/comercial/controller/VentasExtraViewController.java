@@ -12,6 +12,8 @@ import com.transur.sigem.maquinaria.repository.TarifaRepository;
 import com.transur.sigem.comercial.service.ContratoService;
 import com.transur.sigem.comercial.service.ReporteExportService;
 import com.transur.sigem.comercial.service.ReporteVentasService;
+import com.transur.sigem.comercial.repository.ContratoRepository;
+import com.transur.sigem.pagos.service.PagoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ContentDisposition;
@@ -37,6 +39,8 @@ public class VentasExtraViewController {
     private final VentaService ventaService;
     private final MaquinariaRepository maquinariaRepository;
     private final TarifaRepository tarifaRepository;
+    private final PagoService pagoService;
+    private final ContratoRepository contratoRepository;
 
     @GetMapping("/contratos")
     public String contratos(Model model) {
@@ -49,6 +53,7 @@ public class VentasExtraViewController {
         model.addAttribute("vigentes", vigentes);
         model.addAttribute("porFinalizar", porFinalizar);
         model.addAttribute("montoContratado", monto);
+        model.addAttribute("resumenesPago", pagoService.resumenes(contratoRepository.findAllByOrderByFechaInicioDesc()));
         return "ventas/contratos";
     }
 
@@ -88,7 +93,10 @@ public class VentasExtraViewController {
     @GetMapping("/contratos/{id}")
     public String detalleContrato(@PathVariable Long id, Model model, RedirectAttributes redirect) {
         try {
-            model.addAttribute("contrato", contratoService.obtenerDetalle(id));
+            var detalle = contratoService.obtenerDetalle(id);
+            model.addAttribute("contrato", detalle);
+            model.addAttribute("resumenPago", pagoService.resumen(detalle.getId(), detalle.getMontoTotal()));
+            model.addAttribute("pagos", pagoService.listarPorContrato(detalle.getId()));
             return "ventas/contrato-detalle";
         } catch (Exception e) {
             redirect.addFlashAttribute("error", e.getMessage());

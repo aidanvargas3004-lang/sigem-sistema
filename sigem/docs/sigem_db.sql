@@ -1000,6 +1000,50 @@ ALTER SEQUENCE public.ordenes_compra_id_seq OWNED BY public.ordenes_compra.id;
 
 
 --
+-- Name: pagos; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pagos (
+    id bigint NOT NULL,
+    estado character varying(20) NOT NULL,
+    fecha_pago date NOT NULL,
+    fecha_registro timestamp(6) without time zone NOT NULL,
+    fecha_revision timestamp(6) without time zone,
+    metodo character varying(20) NOT NULL,
+    monto numeric(12,2) NOT NULL,
+    motivo character varying(255),
+    numero_operacion character varying(40),
+    numero_recibo character varying(20),
+    observacion character varying(255),
+    origen character varying(10) NOT NULL,
+    registrado_por character varying(50) NOT NULL,
+    revisado_por character varying(50),
+    contrato_id bigint NOT NULL,
+    CONSTRAINT pagos_estado_check CHECK (((estado)::text = ANY ((ARRAY['POR_VALIDAR'::character varying, 'CONFIRMADO'::character varying, 'RECHAZADO'::character varying, 'ANULADO'::character varying])::text[]))),
+    CONSTRAINT pagos_metodo_check CHECK (((metodo)::text = ANY ((ARRAY['EFECTIVO'::character varying, 'TRANSFERENCIA'::character varying, 'DEPOSITO'::character varying, 'YAPE'::character varying, 'PLIN'::character varying, 'TARJETA'::character varying])::text[])))
+);
+
+
+--
+-- Name: pagos_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.pagos_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: pagos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.pagos_id_seq OWNED BY public.pagos.id;
+
+
+--
 -- Name: permisos; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1788,6 +1832,13 @@ ALTER TABLE ONLY public.ordenes_compra ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: pagos id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pagos ALTER COLUMN id SET DEFAULT nextval('public.pagos_id_seq'::regclass);
+
+
+--
 -- Name: permisos id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -2123,6 +2174,14 @@ ALTER TABLE ONLY public.ordenes_compra
 
 
 --
+-- Name: pagos pagos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pagos
+    ADD CONSTRAINT pagos_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: permisos permisos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2347,6 +2406,14 @@ ALTER TABLE ONLY public.contratos
 
 
 --
+-- Name: pagos uk_adgury1hgndcccjvxefg3ngw8; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pagos
+    ADD CONSTRAINT uk_adgury1hgndcccjvxefg3ngw8 UNIQUE (numero_recibo);
+
+
+--
 -- Name: maquinarias uk_ase3w2j7hj0o3vm5ls83b46as; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2495,6 +2562,20 @@ ALTER TABLE ONLY public.ventas
 --
 
 CREATE INDEX idx_gps_maquinaria_fecha ON public.ubicaciones_gps USING btree (maquinaria_id, fecha_hora);
+
+
+--
+-- Name: idx_pagos_contrato; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pagos_contrato ON public.pagos USING btree (contrato_id);
+
+
+--
+-- Name: idx_pagos_estado; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pagos_estado ON public.pagos USING btree (estado);
 
 
 --
@@ -2847,6 +2928,14 @@ ALTER TABLE ONLY public.empleados
 
 ALTER TABLE ONLY public.ubicaciones_gps
     ADD CONSTRAINT fkf73jyaiec22lwj03f8g03efdp FOREIGN KEY (maquinaria_id) REFERENCES public.maquinarias(id);
+
+
+--
+-- Name: pagos fkfsgbuky3qe4emfg7adfd4md2l; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pagos
+    ADD CONSTRAINT fkfsgbuky3qe4emfg7adfd4md2l FOREIGN KEY (contrato_id) REFERENCES public.contratos(id);
 
 
 --

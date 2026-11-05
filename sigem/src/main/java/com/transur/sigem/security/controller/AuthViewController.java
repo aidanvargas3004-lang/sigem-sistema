@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -80,7 +81,8 @@ public class AuthViewController {
         return "redirect:/acceso-denegado";
     }
 
-    @GetMapping("/acceso-denegado")
+    /** Acepta cualquier método: Spring Security reenvía aquí también los POST denegados (rol o CSRF). */
+    @RequestMapping("/acceso-denegado")
     public String accesoDenegado() {
         return "login/acceso-denegado";
     }

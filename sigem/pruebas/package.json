@@ -1,0 +1,13 @@
+{
+  "name": "sigem-pruebas",
+  "private": true,
+  "description": "Pruebas de sistema y de aceptación de SIGEM con Playwright",
+  "scripts": {
+    "sistema": "node sistema/recorrido-roles.js",
+    "aceptacion": "node aceptacion/flujo-comercial.js",
+    "todas": "node sistema/recorrido-roles.js && node aceptacion/flujo-comercial.js"
+  },
+  "devDependencies": {
+    "playwright": "1.48.2"
+  }
+}
