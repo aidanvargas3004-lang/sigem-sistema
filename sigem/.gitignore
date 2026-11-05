@@ -46,3 +46,7 @@ logs/
 
 # Respaldos locales de la base de datos
 backups/
+
+# Resultados de las pruebas con Playwright
+pruebas/node_modules/
+pruebas/resultados/
